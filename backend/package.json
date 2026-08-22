@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "test:load": "node scripts/run_load_test.js"
+    "test:load": "node scripts/run_load_test.js",
+    "test:selenium": "node scripts/run_selenium_tests.js"
   },
   "keywords": [],
   "author": "",

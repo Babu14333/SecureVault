@@ -1,0 +1,44 @@
+Test Case ID,Module,Test Scenario,Severity,Preconditions,Test Steps,Input Data,Expected Result,Actual Result,Execution Time (ms),Status
+TC-HLT-001,System Health,API Health Check & Environment Status,Critical,API Server is listening on test port,"1. Send GET request to /api/health
+2. Verify HTTP status is 200
+3. Verify JSON success is true",GET /api/health,"Status: 200 OK, success: true, message: ""SecureVault API is running""","Status: 200, Success: true, Message: ""SecureVault API is running""",43,PASS
+TC-HLT-002,System Health,Dual-Stack IPv4 / LAN Host Resolution,High,Network interfaces configured,"1. Send GET request to /api/health
+2. Verify lanIp field is resolved",GET /api/health,"Status 200, non-empty lanIp returned","Status: 200, Resolved Host: 172.23.30.50",11,PASS
+TC-AUT-001,Authentication,User Registration - Schema Validation (Empty Fields),High,Auth routes mounted,"1. Send POST /api/auth/register with empty fields
+2. Verify 400 Bad Request error returned","{ email: """", password: ""123"" }",Status 400 Bad Request with validation errors,"Status: 400, Rejected missing email and invalid password",24,PASS
+TC-AUT-002,Authentication,User Login - Invalid Password Defense,Critical,Auth service active,"1. Send POST /api/auth/login with wrong credentials
+2. Verify 401 Unauthorized or 400","{ email: ""test_unauth@vault.app"", password: ""IncorrectPassword123"" }",Status 401 Unauthorized or 400 Invalid credentials,"Status: 401, Unauthorized login rejected securely",2245,PASS
+TC-AUT-003,Authentication,Token Refresh Endpoint Validation,High,JWT refresh route active,"1. Send POST /api/auth/refresh with bogus token
+2. Verify rejection","{ refreshToken: ""invalid-token-xyz"" }",Status 401 Unauthorized or 400 Invalid Token,"Status: 401, Malformed refresh token safely rejected",3,PASS
+TC-AUT-004,Authentication,Protected Profile Route - Bearer Token Required,Critical,Auth middleware active,"1. Send GET /api/auth/profile without Authorization header
+2. Verify 401 Unauthorized",GET /api/auth/profile (No Bearer Token),"Status 401 Unauthorized, access denied","Status: 401, Protected profile route blocked unauthenticated request",3,PASS
+TC-AUT-005,Authentication,MFA OTP Resend Endpoint Resilience,High,OTP module active,"1. Send POST /api/otp/resend with test phone payload
+2. Verify structured response","{ type: ""login_mfa"", targetPhone: ""+15075545100"" }",Status 200 OK or 400 handled cleanly,"Status: 400, OTP service returned valid structured format",3,PASS
+TC-AUT-006,Authentication,Forgot Password Reset Request Handler,Medium,Password recovery router active,"1. Send POST /api/auth/forgot-password/request
+2. Check payload validation","{ email: ""demo_recovery@securevault.app"" }",Status 200 OK or 404 handled gracefully,"Status: 404, Password recovery request processed safely",1629,PASS
+TC-FIL-001,File Vault,Vault File Listing - Unauthorized Access Check,Critical,Files router active,"1. Send GET /api/files without auth
+2. Verify 401 Unauthorized",GET /api/files,Status 401 Unauthorized,"Status: 401, Vault file list blocked for unauthenticated callers",1,PASS
+TC-FIL-002,File Vault,Vault Storage Statistics Route Protection,High,File stats router active,"1. Send GET /api/files/stats without token
+2. Verify 401 Unauthorized",GET /api/files/stats,Status 401 Unauthorized,"Status: 401, Storage quota metrics restricted to verified users",1,PASS
+TC-FIL-003,File Vault,Temporary Download Token Route Protection,High,Download token controller mounted,"1. Send POST /api/files/test-file-id/download-token without auth
+2. Verify 401 Unauthorized",POST /api/files/test-file-id/download-token,Status 401 Unauthorized,"Status: 401, Direct download token generation secured",1,PASS
+TC-SHR-001,File Sharing,Share Link Public Verification with Invalid Token,High,Sharing router mounted,"1. Send POST /api/share/verify/invalid-token-123
+2. Verify 404 or 400",POST /api/share/verify/invalid-token-123,Status 404 Not Found or 400 Invalid Share Link,"Status: 404, Invalid share token safely denied",266,PASS
+TC-SHR-002,File Sharing,Share Link Creation Route Protection,Critical,Share creation router active,"1. Send POST /api/share/create without token
+2. Verify 401 Unauthorized",POST /api/share/create,Status 401 Unauthorized,"Status: 401, Share link generator restricted to authenticated owners",2,PASS
+TC-SEC-001,Security & SIEM,Security Activity Audit Logs Access Control,High,Security audit router active,"1. Send GET /api/security/logs without token
+2. Verify 401 Unauthorized",GET /api/security/logs,Status 401 Unauthorized,"Status: 401, Audit logs access denied for unauthenticated users",1,PASS
+TC-SEC-002,Security & SIEM,CORS & HTTP Security Headers Inspection,High,Helmet & CORS middlewares loaded,"1. Query /api/health
+2. Check Access-Control and headers in response",GET /api/health,Valid headers returned with CORS configuration,"CORS Origin Header: ""Configured""",16,PASS
+TC-SEC-003,Security & SIEM,Active Hardware Sessions Route Protection,High,Session tracking active,"1. Send GET /api/security/sessions without auth
+2. Verify 401 Unauthorized",GET /api/security/sessions,Status 401 Unauthorized,"Status: 401, Active hardware sessions list protected",3,PASS
+TC-ADM-001,Admin Governance,Admin SOC Overview Dashboard Route Protection (RBAC),Critical,Admin router mounted,"1. Send GET /api/admin/overview without admin token
+2. Verify 401 Unauthorized",GET /api/admin/overview,Status 401 Unauthorized,"Status: 401, SOC Overview dashboard requires admin privileges",1,PASS
+TC-ADM-002,Admin Governance,Admin User Governance Endpoint Protection,Critical,Admin user manager active,"1. Send GET /api/admin/users without admin token
+2. Verify 401 Unauthorized",GET /api/admin/users,Status 401 Unauthorized,"Status: 401, User management restricted to Super Admins",1,PASS
+TC-ADM-003,Admin Governance,Security Policies & Rules Engine Route Protection,High,Policies controller mounted,"1. Send GET /api/admin/policies without auth
+2. Verify 401 Unauthorized",GET /api/admin/policies,Status 401 Unauthorized,"Status: 401, Security rules engine protected against unauthorized modification",1,PASS
+TC-DEV-001,Device Governance,Trusted Device Registration Route Protection,High,Device controller mounted,"1. Send GET /api/devices without auth
+2. Verify 401 Unauthorized",GET /api/devices,Status 401 Unauthorized,"Status: 401, Trusted hardware device pairing requires valid authentication",1,PASS
+TC-ERR-001,System Resilience,Undefined Route 404 Handler Resilience,Medium,Error middleware active,"1. Send GET /api/nonexistent-test-route
+2. Verify structured 404 response",GET /api/nonexistent-test-route,Status 404 Not Found with JSON error payload,"Status: 404, Undefined endpoints intercepted gracefully by 404 Handler",1,PASS
