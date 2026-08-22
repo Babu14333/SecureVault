@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp*
+.pnp.js
+
+# Environment secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.state
+
+# Expo / React Native
+.expo/
+dist/
+web-build/
+metro-cache/
+npm-debug.log
+.eas/
+
+# Android / iOS build artifacts (if prebuilt locally)
+*.apk
+*.aab
+*.ipa
+android/
+ios/
+
+# Log files and downloads
+eas_logs*.txt
+eas_logs*.txt.gz
+clean_logs.txt
+eas_logs_decoded.txt
+eas_logs_curl.txt
+
+# macOS / Windows system files
+.DS_Store
+Thumbs.db
+*.zip

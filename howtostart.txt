@@ -1,0 +1,5 @@
+ip =    10.255.127.58
+
+
+cd backend
+npm start 

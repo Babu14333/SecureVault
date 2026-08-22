@@ -1,0 +1,23 @@
+Metric,Value,Unit
+Project Name,SecureVault File Storage & Vault API,Text
+Test Type,Baseline Concurrent Load Test,Text
+Target Endpoint,http://localhost:5000/api/health,URL
+Test Execution Date,2026-08-20 18:20:24,UTC Timestamp
+Concurrent Virtual Users (VU),100,Users
+Test Duration,60,Seconds
+Total Requests Processed,344580,Requests
+Successful Requests (200 OK),99,Requests
+Failed Requests / Timeouts,344481,Requests
+Success Rate,0.03%,Percentage
+Average Requests Per Second (RPS),5743.4,req/sec
+Peak Requests Per Second (Max RPS),7207,req/sec
+Min Requests Per Second,65,req/sec
+Minimum Response Time (Fastest),1,ms
+Average Response Time (Mean),16.92,ms
+Median Response Time (P50),14,ms
+90th Percentile Response Time (P90),24,ms
+95th Percentile Response Time (P95),35,ms
+99th Percentile Response Time (P99),43,ms
+Maximum Response Time (Slowest),1471,ms
+Total Data Transferred,245.81,MB
+Average Bandwidth,4.10,MB/s
