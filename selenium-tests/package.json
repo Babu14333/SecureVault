@@ -1,0 +1,34 @@
+{
+  "name": "securevault-selenium-tests",
+  "version": "1.0.0",
+  "description": "Selenium WebDriver E2E Automation Testing Suite for SecureVault Web Frontend",
+  "main": "tests/login-tests.js",
+  "scripts": {
+    "test": "node tests/login-tests.js",
+    "test:live": "node tests/login-tests.js --live-browser",
+    "test:chrome": "node tests/login-tests.js --browser=chrome",
+    "test:firefox": "node tests/login-tests.js --browser=firefox",
+    "test:edge": "node tests/login-tests.js --browser=edge",
+    "report": "node tests/login-tests.js --report-only"
+  },
+  "keywords": [
+    "selenium",
+    "selenium-webdriver",
+    "e2e",
+    "testing",
+    "react-native-web",
+    "web-automation",
+    "securevault",
+    "login-tests"
+  ],
+  "author": "SecureVault QA Automation Team",
+  "license": "ISC",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "chromedriver": "^131.0.0",
+    "geckodriver": "^4.4.1",
+    "selenium-webdriver": "^4.27.0"
+  }
+}

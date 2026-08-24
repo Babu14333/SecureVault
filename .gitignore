@@ -35,6 +35,8 @@ eas_logs*.txt.gz
 clean_logs.txt
 eas_logs_decoded.txt
 eas_logs_curl.txt
+logs/
+*.log
 
 # macOS / Windows system files
 .DS_Store

@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "test:load": "node scripts/run_load_test.js"
+    "test:load": "node scripts/run_load_test.js",
+    "test:selenium": "node scripts/run_selenium_tests.js",
+    "test:security": "node scripts/run_security_assessment.js"
   },
   "keywords": [],
   "author": "",
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "autocannon": "^8.0.0",
+    "isomorphic-git": "^1.41.9",
     "xlsx": "^0.18.5"
   }
 }

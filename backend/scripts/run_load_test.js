@@ -4,41 +4,25 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure environment variable for rate limiting
 process.env.DISABLE_RATE_LIMIT = 'true';
-process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'test';
 
-const PORT = process.env.PORT || 5000;
+const PORT = 5088;
 const BASE_URL = `http://localhost:${PORT}`;
 const VIRTUAL_USERS = 100;
 const DURATION_SECONDS = 60;
 
-// Helper to check if backend is up
-function checkServerUp(url) {
+let serverInstance = null;
+
+// Start dedicated in-process server with rate limiting disabled
+function startDedicatedServer() {
   return new Promise((resolve) => {
-    const req = http.get(`${url}/api/health`, (res) => {
-      resolve(res.statusCode === 200);
-    });
-    req.on('error', () => resolve(false));
-    req.setTimeout(2000, () => {
-      req.destroy();
-      resolve(false);
+    const app = require('../src/server');
+    serverInstance = app.listen(PORT, () => {
+      console.log(`[+] Started dedicated high-performance load test server on ${BASE_URL}`);
+      resolve(serverInstance);
     });
   });
-}
-
-// Start in-process server if not already running
-async function ensureServerRunning() {
-  const isRunning = await checkServerUp(BASE_URL);
-  if (isRunning) {
-    console.log(`[+] Detected active SecureVault API running at ${BASE_URL}`);
-    return null;
-  }
-
-  console.log(`[*] Starting SecureVault backend in-process on port ${PORT}...`);
-  const app = require('../src/server');
-  // Return the active server instance so we can close it when done if needed
-  return app;
 }
 
 async function runBenchmark() {
@@ -52,7 +36,7 @@ async function runBenchmark() {
   console.log('----------------------------------------------------------------');
   console.log('⏳ Running load test... Please wait 60 seconds...\n');
 
-  await ensureServerRunning();
+  await startDedicatedServer();
 
   // Track per-second data
   const secondStats = [];
