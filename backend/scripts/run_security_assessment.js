@@ -13,6 +13,15 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception in security assessment:', err);
+  process.exit(1);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
 // Resolve XLSX
 let XLSX;
 try {
@@ -21,10 +30,14 @@ try {
   try {
     XLSX = require(path.join(__dirname, '../node_modules/xlsx'));
   } catch (e2) {
-    console.error('Error loading xlsx module');
-    process.exit(1);
+    try {
+      XLSX = require(path.join(__dirname, '../../node_modules/xlsx'));
+    } catch (e3) {
+      console.warn('Warning: xlsx module not found, Excel export will be skipped if unavailable');
+    }
   }
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PHASE 1: BACKEND DISCOVERY & INVENTORY
