@@ -336,8 +336,13 @@ async function runAssessment() {
   // Step 1: Start ephemeral test server for non-destructive DAST scanning
   const TEST_PORT = 5099;
   const app = require('../src/server');
-  const server = app.listen(TEST_PORT);
-  console.log(`[+] Mounted local security assessment test target on port ${TEST_PORT}`);
+  const server = await new Promise((resolve) => {
+    const s = app.listen(TEST_PORT, '127.0.0.1', () => {
+      console.log(`[+] Mounted local security assessment test target on port ${TEST_PORT}`);
+      resolve(s);
+    });
+  });
+
 
   console.log(`\n[+] PHASE 1: Backend Discovery Completed (${Object.keys(BACKEND_INVENTORY).length} inventory items identified)`);
   console.log(`[+] PHASE 2: API Discovery Completed (${API_INVENTORY.length} endpoints mapped)`);

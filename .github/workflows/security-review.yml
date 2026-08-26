@@ -15,6 +15,17 @@ jobs:
     permissions:
       contents: read
 
+    env:
+      NODE_ENV: test
+      PORT: 5000
+      JWT_SECRET: securevault-ci-test-jwt-secret-key-32-chars
+      JWT_REFRESH_SECRET: securevault-ci-test-refresh-secret-32-chars
+      AES_SECRET_KEY: securevault-ci-aes-key-32-chars!
+      SUPABASE_URL: https://mock-ci.supabase.co
+      SUPABASE_ANON_KEY: mock-ci-anon-key-placeholder
+      SUPABASE_SERVICE_KEY: mock-ci-service-key-placeholder
+
+
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4
