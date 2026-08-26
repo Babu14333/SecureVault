@@ -617,6 +617,10 @@ function generateDependencyReportMd(outputDir) {
 }
 
 function generateFindingsExcel(outputDir, dastResults) {
+  if (typeof XLSX === 'undefined') {
+    console.warn('[!] XLSX module not available, skipping findings.xlsx generation');
+    return;
+  }
   const wb = XLSX.utils.book_new();
 
   // Sheet 1: Security Findings
@@ -688,6 +692,10 @@ function generateFindingsExcel(outputDir, dastResults) {
 }
 
 function generateEndpointInventoryExcel(outputDir) {
+  if (typeof XLSX === 'undefined') {
+    console.warn('[!] XLSX module not available, skipping endpoint-inventory.xlsx generation');
+    return;
+  }
   const wb = XLSX.utils.book_new();
   const rows = API_INVENTORY.map(e => ({
     'HTTP Method': e.method,
