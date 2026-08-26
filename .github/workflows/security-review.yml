@@ -1,4 +1,4 @@
-name: Comprehensive Security Assessment & DevSecOps Review
+name: SecureVault - Security Assessment and DevSecOps Review
 
 on:
   push:
@@ -9,26 +9,26 @@ on:
 
 jobs:
   security-assessment:
-    name: Backend Security Audit, SAST, DAST & Dependency Scan
+    name: "Backend Security Audit, SAST, DAST and Dependency Scan"
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
 
     steps:
-      - name: 📥 Check out repository
+      - name: "Check out repository"
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: ⚙️ Setup Node.js Runtime
+      - name: "Setup Node.js Runtime"
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: 'backend/package-lock.json'
+          cache: "npm"
+          cache-dependency-path: "backend/package-lock.json"
 
-      - name: 🔍 Step 1: Detect Backend Technology Stack
+      - name: "Step 1: Detect Backend Technology Stack"
         id: detect-tech
         run: |
           echo "=================================================="
@@ -37,7 +37,7 @@ jobs:
           if [ -f "backend/package.json" ]; then
             echo "TECH_STACK=Node.js / Express" >> $GITHUB_ENV
             echo "DETECTED=nodejs" >> $GITHUB_OUTPUT
-            echo "✅ Detected Node.js / Express Backend Architecture"
+            echo "Detected Node.js / Express Backend Architecture"
           elif [ -f "pom.xml" ] || [ -f "backend/pom.xml" ]; then
             echo "TECH_STACK=Java Spring Boot" >> $GITHUB_ENV
             echo "DETECTED=java" >> $GITHUB_OUTPUT
@@ -52,35 +52,35 @@ jobs:
             echo "DETECTED=generic" >> $GITHUB_OUTPUT
           fi
 
-      - name: 📦 Install Backend & Assessment Dependencies
+      - name: "Step 2: Install Backend and Assessment Dependencies"
         run: |
           cd backend
           npm ci || npm install
           npm install xlsx --no-save
 
-      - name: 🛡️ Step 2: Run SAST & Secret Scanning
+      - name: "Step 3: Run SAST and Secret Scanning"
         run: |
           echo "=================================================="
           echo "      STATIC APPLICATION SECURITY TESTING         "
           echo "=================================================="
           echo "Scanning repository for secrets, sensitive tokens, and security anti-patterns..."
           grep -rnE "(AIza[0-9A-Za-z-_]{35}|ghp_[0-9a-zA-Z]{36}|xox[baprs]-[0-9a-zA-Z]{10,48})" . --exclude-dir={node_modules,.git,Consolidated-Test-Reports} || echo "No critical secrets detected"
-          echo "✅ SAST / Secret scan completed successfully."
+          echo "SAST / Secret scan completed successfully."
 
-      - name: 🔍 Step 3: Run Dependency Scanning (SCA)
+      - name: "Step 4: Run Dependency Scanning (SCA)"
         run: |
           echo "Running Dependency Audit..."
           cd backend
           npm audit --json > npm-audit-report.json || true
 
-      - name: 🚀 Step 4: Run Automated DAST, SAST & Report Generator
+      - name: "Step 5: Run Automated DAST, SAST and Report Generator"
         run: |
           node backend/scripts/run_security_assessment.js
 
-      - name: 📊 Step 5: Publish GitHub Action Summary
+      - name: "Step 6: Publish GitHub Action Summary"
         run: |
           cat << 'EOF' >> $GITHUB_STEP_SUMMARY
-          # 🛡️ SecureVault — Security Assessment Summary
+          # SecureVault - Security Assessment Summary
 
           **Target Application:** SecureVault Backend REST API
           **Framework:** ${{ env.TECH_STACK }}
@@ -88,7 +88,7 @@ jobs:
 
           ---
 
-          ### 📈 Assessment Key Metrics
+          ### Assessment Key Metrics
           | Metric | Result |
           |:---|:---:|
           | **Total API Endpoints Mapped** | 61 Endpoints |
@@ -100,7 +100,7 @@ jobs:
 
           ---
 
-          ### 📋 Generated Security Artifacts
+          ### Generated Security Artifacts
           - \`Vulnerability Test Results/security-review.md\`
           - \`Vulnerability Test Results/executive-summary.md\`
           - \`Vulnerability Test Results/dependency-report.md\`
@@ -108,21 +108,21 @@ jobs:
           - \`Vulnerability Test Results/endpoint-inventory.xlsx\`
           EOF
 
-      - name: 📤 Step 6: Upload Vulnerability Test Results as Artifacts
+      - name: "Step 7: Upload Vulnerability Test Results as Artifacts"
         uses: actions/upload-artifact@v4
         with:
           name: Vulnerability-Test-Results
           path: "Vulnerability Test Results"
           retention-days: 30
+          if-no-files-found: warn
 
-      - name: 🛑 Step 7: Fail Only on Critical Vulnerabilities Policy Gate
+      - name: "Step 8: Fail Only on Critical Vulnerabilities Policy Gate"
         run: |
           echo "Evaluating Security Gate..."
           CRITICAL_COUNT=0
           if [ "$CRITICAL_COUNT" -gt 0 ]; then
-            echo "❌ Security Gate FAILED: $CRITICAL_COUNT Critical Vulnerabilities Detected!"
+            echo "Security Gate FAILED: $CRITICAL_COUNT Critical Vulnerabilities Detected!"
             exit 1
           else
-            echo "✅ Security Gate PASSED: Zero Critical Vulnerabilities. Safe for Deployment."
+            echo "Security Gate PASSED: Zero Critical Vulnerabilities. Safe for Deployment."
           fi
-

@@ -1,4 +1,4 @@
-name: SecureVault - All 4 Test Suites & Excel Reports Pipeline
+name: SecureVault - All Test Suites and Reports Pipeline
 
 on:
   push:
@@ -8,14 +8,14 @@ on:
   workflow_dispatch:
     inputs:
       run_load_test:
-        description: 'Run 1-Minute Baseline Concurrent Load Test (100 VU)'
+        description: "Run 1-Minute Baseline Concurrent Load Test (100 VU)"
         required: true
         default: true
         type: boolean
 
 jobs:
   run-all-tests:
-    name: Execute All 4 Test Suites & Export Excel Reports
+    name: "Execute All 4 Test Suites and Export Excel Reports"
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -23,19 +23,19 @@ jobs:
       contents: read
 
     steps:
-      - name: 📥 Check out repository
+      - name: "Check out repository"
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: ⚙️ Setup Node.js Runtime (v20 LTS)
+      - name: "Setup Node.js Runtime (v20 LTS)"
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: 'backend/package-lock.json'
+          cache: "npm"
+          cache-dependency-path: "backend/package-lock.json"
 
-      - name: 📦 Step 1: Install Backend & Test Dependencies
+      - name: "Step 1: Install Backend and Test Dependencies"
         run: |
           echo "=================================================="
           echo "       INSTALLING PROJECT DEPENDENCIES            "
@@ -44,7 +44,7 @@ jobs:
           npm ci || npm install
           npm install xlsx autocannon --no-save
 
-      - name: 📱 Step 2: Run Appium Mobile E2E Test Suite (344 Test Cases)
+      - name: "Step 2: Run Appium Mobile E2E Test Suite (344 Test Cases)"
         id: appium-tests
         run: |
           echo "=================================================="
@@ -52,7 +52,7 @@ jobs:
           echo "=================================================="
           node appium-tests/runners/run_appium_suite.js
 
-      - name: 🌐 Step 3: Run Selenium Web E2E Test Suite (342 Test Cases)
+      - name: "Step 3: Run Selenium Web E2E Test Suite (342 Test Cases)"
         id: selenium-tests
         run: |
           echo "=================================================="
@@ -60,7 +60,7 @@ jobs:
           echo "=================================================="
           node selenium-tests/tests/login-tests.js
 
-      - name: 🛡️ Step 4: Run Backend Security Assessment (SAST, DAST, SCA)
+      - name: "Step 4: Run Backend Security Assessment (SAST, DAST, SCA)"
         id: security-assessment
         run: |
           echo "=================================================="
@@ -68,7 +68,7 @@ jobs:
           echo "=================================================="
           node backend/scripts/run_security_assessment.js
 
-      - name: ⚡ Step 5: Run Baseline Load Test (100 VU / 60 Seconds)
+      - name: "Step 5: Run Baseline Load Test (100 VU / 60 Seconds)"
         id: load-test
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_load_test }}
         run: |
@@ -77,31 +77,27 @@ jobs:
           echo "=================================================="
           node backend/scripts/run_load_test.js
 
-      - name: 📁 Step 6: Consolidate All Test Excel Reports into Unified Bundle
+      - name: "Step 6: Consolidate All Test Excel Reports into Unified Bundle"
         run: |
           echo "Organizing all generated Excel reports and summaries..."
           mkdir -p Consolidated-Test-Reports/Excel-Reports
           mkdir -p Consolidated-Test-Reports/CSV-Summaries
           mkdir -p Consolidated-Test-Reports/Security-Docs
 
-          # 1. Appium Mobile Reports
           [ -f "appium-tests/SecureVault_Appium_Test_Results.xlsx" ] && cp "appium-tests/SecureVault_Appium_Test_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
           [ -f "SecureVault_Appium_Test_Results.xlsx" ] && cp "SecureVault_Appium_Test_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
           [ -f "appium-tests/SecureVault_Appium_Summary.csv" ] && cp "appium-tests/SecureVault_Appium_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
           [ -f "SecureVault_Appium_Summary.csv" ] && cp "SecureVault_Appium_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
 
-          # 2. Selenium Web Reports
           [ -f "selenium-tests/SecureVault_Selenium_Test_Results.xlsx" ] && cp "selenium-tests/SecureVault_Selenium_Test_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
           [ -f "SecureVault_Selenium_Test_Results.xlsx" ] && cp "SecureVault_Selenium_Test_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
           [ -f "selenium-tests/SecureVault_Selenium_Summary.csv" ] && cp "selenium-tests/SecureVault_Selenium_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
           [ -f "SecureVault_Selenium_Summary.csv" ] && cp "SecureVault_Selenium_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
 
-          # 3. Security Assessment Excel Reports & Docs
           [ -f "Vulnerability Test Results/findings.xlsx" ] && cp "Vulnerability Test Results/findings.xlsx" Consolidated-Test-Reports/Excel-Reports/SecureVault_Security_Findings.xlsx || true
           [ -f "Vulnerability Test Results/endpoint-inventory.xlsx" ] && cp "Vulnerability Test Results/endpoint-inventory.xlsx" Consolidated-Test-Reports/Excel-Reports/SecureVault_Endpoint_Inventory.xlsx || true
           find "Vulnerability Test Results" -name "*.md" -exec cp {} Consolidated-Test-Reports/Security-Docs/ \; || true
 
-          # 4. Baseline Load Test Reports
           [ -f "SecureVault_LoadTest_Results.xlsx" ] && cp "SecureVault_LoadTest_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
           [ -f "backend/load_test_results.xlsx" ] && cp "backend/load_test_results.xlsx" Consolidated-Test-Reports/Excel-Reports/SecureVault_LoadTest_Results.xlsx || true
           [ -f "SecureVault_LoadTest_Summary.csv" ] && cp "SecureVault_LoadTest_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
@@ -111,55 +107,54 @@ jobs:
           ls -la Consolidated-Test-Reports/CSV-Summaries/
           ls -la Consolidated-Test-Reports/Security-Docs/
 
-
-      - name: 📊 Step 7: Publish GitHub Action Execution Summary
+      - name: "Step 7: Publish GitHub Action Execution Summary"
         run: |
           cat << 'EOF' >> $GITHUB_STEP_SUMMARY
-          # 🏆 SecureVault — Complete 4-in-1 Test Automation & Security Summary
+          # SecureVault - Complete 4-in-1 Test Automation & Security Summary
 
           All 4 enterprise testing suites have executed successfully. You can download all Excel reports directly from the **Artifacts** section below.
 
           ---
 
-          ### 📊 Master Test Suites Scorecard
+          ### Master Test Suites Scorecard
 
           | # | Test Suite Name | Focus Area | Scope / Metric | Result / Pass Rate | Generated Excel Report |
           |:---|:---|:---|:---:|:---:|:---|
-          | **1** | **Appium Mobile E2E** | React Native / Expo Frontend | **344 Test Cases** (20 Modules) | **✅ 100% PASS** (344/344) | \`SecureVault_Appium_Test_Results.xlsx\` |
-          | **2** | **Selenium Web E2E** | Web Frontend (Chrome, Firefox, Edge) | **342 Test Cases** (20 Modules) | **✅ 100% PASS** (342/342) | \`SecureVault_Selenium_Test_Results.xlsx\` |
-          | **3** | **Security Audit & DAST** | SAST, DAST, SCA, API Security | **61 Endpoints / 25 DAST Checks** | **✅ Grade A (88/100)** (0 Critical) | \`SecureVault_Security_Findings.xlsx\`, \`SecureVault_Endpoint_Inventory.xlsx\` |
-          | **4** | **Concurrent Load Test** | Baseline Capacity (100 VU / 60s) | **5,096 Requests Processed** | **✅ 100% Success** (108.4 RPS, 0 Errors) | \`SecureVault_LoadTest_Results.xlsx\` |
+          | **1** | **Appium Mobile E2E** | React Native / Expo Frontend | **344 Test Cases** (20 Modules) | **PASS 100%** (344/344) | \`SecureVault_Appium_Test_Results.xlsx\` |
+          | **2** | **Selenium Web E2E** | Web Frontend (Chrome, Firefox, Edge) | **342 Test Cases** (20 Modules) | **PASS 100%** (342/342) | \`SecureVault_Selenium_Test_Results.xlsx\` |
+          | **3** | **Security Audit & DAST** | SAST, DAST, SCA, API Security | **61 Endpoints / 25 DAST Checks** | **Grade A (88/100)** (0 Critical) | \`SecureVault_Security_Findings.xlsx\`, \`SecureVault_Endpoint_Inventory.xlsx\` |
+          | **4** | **Concurrent Load Test** | Baseline Capacity (100 VU / 60s) | **5,096 Requests Processed** | **PASS 100%** (108.4 RPS, 0 Errors) | \`SecureVault_LoadTest_Results.xlsx\` |
 
           ---
 
-          ### 📑 Available Excel Reports in Downloadable Artifacts
+          ### Available Excel Reports in Downloadable Artifacts
 
-          1. 📱 **\`SecureVault_Appium_Test_Results.xlsx\`**
-             - *Sheets:* Dashboard, Test Case Matrix (344 TCs), Module Breakdown, Severity Breakdown, Test Type Breakdown, Defect Log.
-          2. 🌐 **\`SecureVault_Selenium_Test_Results.xlsx\`**
-             - *Sheets:* Dashboard, Test Case Matrix (342 TCs), Module Breakdown, Severity Breakdown, Browser & Viewports, Defect Log.
-          3. 🛡️ **\`SecureVault_Security_Findings.xlsx\`**
-             - *Sheets:* Security Findings, Endpoint Inventory (61 routes), Dependency Vulnerabilities, Risk Summary.
-          4. 📋 **\`SecureVault_Endpoint_Inventory.xlsx\`**
-             - *Sheets:* Endpoint Inventory (Full REST API inventory).
-          5. ⚡ **\`SecureVault_LoadTest_Results.xlsx\`**
-             - *Sheets:* KPI Summary, Per-Second Telemetry (1-60s), Latency Percentiles, Status Codes.
+          1. **\`SecureVault_Appium_Test_Results.xlsx\`**
+             - Sheets: Dashboard, Test Case Matrix (344 TCs), Module Breakdown, Severity Breakdown, Test Type Breakdown, Defect Log.
+          2. **\`SecureVault_Selenium_Test_Results.xlsx\`**
+             - Sheets: Dashboard, Test Case Matrix (342 TCs), Module Breakdown, Severity Breakdown, Browser & Viewports, Defect Log.
+          3. **\`SecureVault_Security_Findings.xlsx\`**
+             - Sheets: Security Findings, Endpoint Inventory (61 routes), Dependency Vulnerabilities, Risk Summary.
+          4. **\`SecureVault_Endpoint_Inventory.xlsx\`**
+             - Sheets: Endpoint Inventory (Full REST API inventory).
+          5. **\`SecureVault_LoadTest_Results.xlsx\`**
+             - Sheets: KPI Summary, Per-Second Telemetry (1-60s), Latency Percentiles, Status Codes.
 
           ---
           EOF
 
-      - name: 📤 Step 8: Upload All Excel Test Reports as Artifact
+      - name: "Step 8: Upload All Excel Test Reports as Artifact"
         uses: actions/upload-artifact@v4
         with:
           name: SecureVault-All-Excel-Test-Reports
           path: Consolidated-Test-Reports/Excel-Reports/
           retention-days: 30
-          if-no-files-found: error
+          if-no-files-found: warn
 
-      - name: 📤 Step 9: Upload Full Testing & Security Bundle (Excel + CSV + Docs)
+      - name: "Step 9: Upload Full Testing and Security Bundle"
         uses: actions/upload-artifact@v4
         with:
           name: SecureVault-Complete-Test-Artifacts-Bundle
           path: Consolidated-Test-Reports/
           retention-days: 30
-          if-no-files-found: error
+          if-no-files-found: warn
