@@ -2,22 +2,22 @@ Metric,Value,Unit
 Project Name,SecureVault File Storage & Vault API,Text
 Test Type,Baseline Concurrent Load Test,Text
 Target Endpoint,http://localhost:5088/api/health,URL
-Test Execution Date,2026-08-24 16:27:41,UTC Timestamp
+Test Execution Date,2026-08-26 05:05:53,UTC Timestamp
 Concurrent Virtual Users (VU),100,Users
 Test Duration,60,Seconds
-Total Requests Processed,5096,Requests
-Successful Requests (200 OK),5096,Requests
+Total Requests Processed,15164,Requests
+Successful Requests (200 OK),15164,Requests
 Failed Requests / Timeouts,0,Requests
 Success Rate,100.00%,Percentage
-Average Requests Per Second (RPS),108.4,req/sec
-Peak Requests Per Second (Max RPS),200,req/sec
-Min Requests Per Second,32,req/sec
-Minimum Response Time (Fastest),637,ms
-Average Response Time (Mean),1175.85,ms
-Median Response Time (P50),1072,ms
-90th Percentile Response Time (P90),1553,ms
-95th Percentile Response Time (P95),3498,ms
-99th Percentile Response Time (P99),3604,ms
-Maximum Response Time (Slowest),5057,ms
-Total Data Transferred,4.05,MB
-Average Bandwidth,0.09,MB/s
+Average Requests Per Second (RPS),286.1,req/sec
+Peak Requests Per Second (Max RPS),368,req/sec
+Min Requests Per Second,196,req/sec
+Minimum Response Time (Fastest),294,ms
+Average Response Time (Mean),401.23,ms
+Median Response Time (P50),400,ms
+90th Percentile Response Time (P90),482,ms
+95th Percentile Response Time (P95),528,ms
+99th Percentile Response Time (P99),554,ms
+Maximum Response Time (Slowest),971,ms
+Total Data Transferred,12.08,MB
+Average Bandwidth,0.23,MB/s

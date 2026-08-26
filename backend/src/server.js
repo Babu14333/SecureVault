@@ -109,10 +109,13 @@ const serverCallback = () => {
   logger.info(`Environment: ${config.nodeEnv}`);
 };
 
-if (HOST) {
-  app.listen(PORT, HOST, serverCallback);
-} else {
-  app.listen(PORT, serverCallback);
+if (require.main === module) {
+  if (HOST) {
+    app.listen(PORT, HOST, serverCallback);
+  } else {
+    app.listen(PORT, serverCallback);
+  }
 }
 
 module.exports = app;
+

@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    permissions:
+      contents: read
+
     steps:
       - name: 📥 Check out repository
         uses: actions/checkout@v4
@@ -39,7 +42,7 @@ jobs:
           echo "=================================================="
           cd backend
           npm ci || npm install
-          npm install xlsx autocannon --save-dev
+          npm install xlsx autocannon --no-save
 
       - name: 📱 Step 2: Run Appium Mobile E2E Test Suite (344 Test Cases)
         id: appium-tests
@@ -82,24 +85,32 @@ jobs:
           mkdir -p Consolidated-Test-Reports/Security-Docs
 
           # 1. Appium Mobile Reports
-          cp appium-tests/SecureVault_Appium_Test_Results.xlsx Consolidated-Test-Reports/Excel-Reports/
-          cp appium-tests/SecureVault_Appium_Summary.csv Consolidated-Test-Reports/CSV-Summaries/
+          [ -f "appium-tests/SecureVault_Appium_Test_Results.xlsx" ] && cp "appium-tests/SecureVault_Appium_Test_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
+          [ -f "SecureVault_Appium_Test_Results.xlsx" ] && cp "SecureVault_Appium_Test_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
+          [ -f "appium-tests/SecureVault_Appium_Summary.csv" ] && cp "appium-tests/SecureVault_Appium_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
+          [ -f "SecureVault_Appium_Summary.csv" ] && cp "SecureVault_Appium_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
 
           # 2. Selenium Web Reports
-          cp selenium-tests/SecureVault_Selenium_Test_Results.xlsx Consolidated-Test-Reports/Excel-Reports/
-          cp selenium-tests/SecureVault_Selenium_Summary.csv Consolidated-Test-Reports/CSV-Summaries/
+          [ -f "selenium-tests/SecureVault_Selenium_Test_Results.xlsx" ] && cp "selenium-tests/SecureVault_Selenium_Test_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
+          [ -f "SecureVault_Selenium_Test_Results.xlsx" ] && cp "SecureVault_Selenium_Test_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
+          [ -f "selenium-tests/SecureVault_Selenium_Summary.csv" ] && cp "selenium-tests/SecureVault_Selenium_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
+          [ -f "SecureVault_Selenium_Summary.csv" ] && cp "SecureVault_Selenium_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
 
           # 3. Security Assessment Excel Reports & Docs
-          cp "Vulnerability Test Results/findings.xlsx" Consolidated-Test-Reports/Excel-Reports/SecureVault_Security_Findings.xlsx
-          cp "Vulnerability Test Results/endpoint-inventory.xlsx" Consolidated-Test-Reports/Excel-Reports/SecureVault_Endpoint_Inventory.xlsx
-          cp "Vulnerability Test Results/"*.md Consolidated-Test-Reports/Security-Docs/
+          [ -f "Vulnerability Test Results/findings.xlsx" ] && cp "Vulnerability Test Results/findings.xlsx" Consolidated-Test-Reports/Excel-Reports/SecureVault_Security_Findings.xlsx || true
+          [ -f "Vulnerability Test Results/endpoint-inventory.xlsx" ] && cp "Vulnerability Test Results/endpoint-inventory.xlsx" Consolidated-Test-Reports/Excel-Reports/SecureVault_Endpoint_Inventory.xlsx || true
+          find "Vulnerability Test Results" -name "*.md" -exec cp {} Consolidated-Test-Reports/Security-Docs/ \; || true
 
           # 4. Baseline Load Test Reports
-          cp SecureVault_LoadTest_Results.xlsx Consolidated-Test-Reports/Excel-Reports/
-          cp SecureVault_LoadTest_Summary.csv Consolidated-Test-Reports/CSV-Summaries/
+          [ -f "SecureVault_LoadTest_Results.xlsx" ] && cp "SecureVault_LoadTest_Results.xlsx" Consolidated-Test-Reports/Excel-Reports/ || true
+          [ -f "backend/load_test_results.xlsx" ] && cp "backend/load_test_results.xlsx" Consolidated-Test-Reports/Excel-Reports/SecureVault_LoadTest_Results.xlsx || true
+          [ -f "SecureVault_LoadTest_Summary.csv" ] && cp "SecureVault_LoadTest_Summary.csv" Consolidated-Test-Reports/CSV-Summaries/ || true
 
           echo "Listing consolidated files:"
           ls -la Consolidated-Test-Reports/Excel-Reports/
+          ls -la Consolidated-Test-Reports/CSV-Summaries/
+          ls -la Consolidated-Test-Reports/Security-Docs/
+
 
       - name: 📊 Step 7: Publish GitHub Action Execution Summary
         run: |

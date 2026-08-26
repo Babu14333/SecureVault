@@ -670,7 +670,10 @@ function generateEndpointInventoryExcel(outputDir) {
 }
 
 // Run assessment
-runAssessment().catch(err => {
+runAssessment().then(() => {
+  process.exit(0);
+}).catch(err => {
   console.error('Fatal assessment error:', err);
   process.exit(1);
 });
+

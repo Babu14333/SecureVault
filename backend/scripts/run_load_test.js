@@ -72,7 +72,13 @@ async function runBenchmark() {
 
   const result = await instance;
   clearInterval(trackerInterval);
+  if (serverInstance) {
+    try {
+      serverInstance.close();
+    } catch (e) {}
+  }
   console.log('\n\n✅ Load test completed successfully!\n');
+
 
   // Process and Print Results
   const totalRequests = result.requests.total;
