@@ -349,13 +349,6 @@ function executeDastRequest(port, testCase) {
 }
 
 
-    if (postData) {
-      req.write(postData);
-    }
-    req.end();
-  });
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // EXECUTE ASSESSMENT & GENERATE REPORTS
 // ─────────────────────────────────────────────────────────────────────────────
